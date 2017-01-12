@@ -1,0 +1,5 @@
+FROM mongo
+
+ADD init2.sh /init2.sh
+
+ENTRYPOINT ["bash", "/init2.sh"]

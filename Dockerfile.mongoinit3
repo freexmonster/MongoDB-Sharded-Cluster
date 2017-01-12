@@ -1,0 +1,5 @@
+FROM mongo
+
+ADD init3.sh /init3.sh
+
+ENTRYPOINT ["bash", "/init3.sh"]
