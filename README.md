@@ -2,7 +2,7 @@
 
 当从docker-compose.yml部署的时候，由于mongo-init(1-3)这三个容器在脚本执行完成后并不会主动销毁自己这个容器，因此要从log判断，部署成功后手动停止这三个容器。
 
-正常状态下，集群中共有7个容器。
+正常状态下，集群中共有7个容器。当需要对数据库进行操作时，mongo客户端连接到mongo-query即可，即开放的27017端口。
 
 ```bash
 sudo docker build -t clarkzjw/mongo-init1 -f Dockerfile.mongoinit1 .
