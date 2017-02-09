@@ -67,7 +67,7 @@ services:
       - mongo-init1
       - mongo-init2
     ports:
-      - "27017"
+      - "27017":"27017"
     container_name: mongo-query
     command: [mongos, --configdb, "my-mongo-set/mongo-config1:27019,mongo-config2:27019,mongo-config3:27019"]
     networks:
