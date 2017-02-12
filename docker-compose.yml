@@ -8,6 +8,8 @@ services:
       - "27019"
     networks:
       -  mongo-net
+    volumes:
+      - config-data1:/data
   mongo-config2:
     image: mongo
     container_name: mongo-config2
@@ -16,6 +18,8 @@ services:
       - "27019"
     networks:
       -  mongo-net
+    volumes:
+      - config-data2:/data
   mongo-config3:
     image: mongo
     container_name: mongo-config3
@@ -24,62 +28,69 @@ services:
       - "27019"
     networks:
       -  mongo-net
-  mongo-init1:
-    image: clarkzjw/mongo-init1
-    container_name: init1
-    links:
-      - mongo-config1
-      - mongo-config2
-      - mongo-config3
-    networks:
-      -  mongo-net
+    volumes:
+      - config-data3:/data
   mongo-shard1:
     image: mongo
     container_name: mongo-shard1
     command: [mongod, --shardsvr, --replSet, my-mongo-set]
     networks:
       -  mongo-net
+    volumes:
+      - shard-data1:/data
   mongo-shard2:
     image: mongo
     container_name: mongo-shard2
     command: [mongod, --shardsvr, --replSet, my-mongo-set]
     networks:
       -  mongo-net
+    volumes:
+      - shard-data2:/data
   mongo-shard3:
     image: mongo
     container_name: mongo-shard3
     command: [mongod, --shardsvr, --replSet, my-mongo-set]
     networks:
       -  mongo-net
-  mongo-init2:
-    image: clarkzjw/mongo-init2
-    container_name: init2
-    links:
-      - mongo-shard1
-      - mongo-shard2
-      - mongo-shard3
-    networks:
-      - mongo-net
+    volumes:
+      - shard-data3:/data
   mongo-query:
     image: mongo
     restart: unless-stopped
     links:
-      - mongo-init1
-      - mongo-init2
+      - mongo-config1
+      - mongo-config2
+      - mongo-config3
+      - mongo-shard1
+      - mongo-shard2
+      - mongo-shard3
     ports:
       - 27017:27017
     container_name: mongo-query
     command: [mongos, --configdb, "my-mongo-set/mongo-config1:27019,mongo-config2:27019,mongo-config3:27019"]
     networks:
       -  mongo-net
-  mongo-init3:
-    image: clarkzjw/mongo-init3
-    container_name: init3
+    volumes:
+      - query-data:/data
+  mongo-init:
+    image: clarkzjw/mongo-init
+    container_name: init
     links:
       - mongo-query
+    environment:
+      - DBNAME={{ DBNAME }}
     networks:
       -  mongo-net
 
 networks:
     mongo-net:
         driver: bridge
+        
+volumes:
+  config-data1: {}
+  config-data2: {}
+  config-data3: {}
+  shard-data1: {}
+  shard-data2: {}
+  shard-data3: {}
+  query-data: {}
