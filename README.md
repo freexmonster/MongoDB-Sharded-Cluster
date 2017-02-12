@@ -1,17 +1,13 @@
 # MongoDB-Sharded-Cluster
 
-当从docker-compose.yml部署的时候，由于mongo-init(1-3)这三个容器在脚本执行完成后并不会主动销毁自己这个容器，因此要从log判断，部署成功后手动停止这三个容器。
+正常状态下，集群中共有8个容器。当需要对数据库进行操作时，mongo客户端连接到mongo-query即可，即开放的27017端口。
 
-正常状态下，集群中共有7个容器。当需要对数据库进行操作时，mongo客户端连接到mongo-query即可，即开放的27017端口。
+在DCE上部署时，应添加一个模板变量DBNAME，代表启用Sharding的数据库名称默认值为test
 
 ```bash
-sudo docker build -t clarkzjw/mongo-init1 -f Dockerfile.mongoinit1 .
-sudo docker build -t clarkzjw/mongo-init2 -f Dockerfile.mongoinit2 .
-sudo docker build -t clarkzjw/mongo-init3 -f Dockerfile.mongoinit3 .
-
 sudo docker-compose up
 
-#以下主从配置应该根据实际需求进行
+# 以下主从配置应该根据实际需求进行
 
 sudo docker exec -it mongo-shardx(use primary node) mongo --port 27018
 db.mycollection.insert({name : 'sample'})
